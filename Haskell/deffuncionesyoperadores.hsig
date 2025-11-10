@@ -1,0 +1,20 @@
+mas1 :: Int -> Int  --Devuelve x+1
+mas1 x = x+1
+
+f :: Int -> Int -> Int     --Devuelve (x*y)+3
+f x y = x * y + 3
+
+esBisiesto :: Int -> Bool               --Devuelve un booleano en funcion de si es bisiesto o no 
+esBisiesto x = (mod x 4 == 0) && (mod x 100 /= 0) || (mod x 400 == 0)
+
+identidad :: a -> a   -- Devulve la identidad 
+identidad x = x
+
+aMayuscula :: Char -> Char                   --Dado una letra en minuscula devuelve la letra en mayuscula
+aMayuscula x = toEnum(diferencia + fromEnum x)
+    where diferencia = fromEnum 'A' - fromEnum 'a'  -- La diferencia entre A y a es la misma que entre B y b...
+
+otraForma :: Char -> Char 
+otraForma x = let diferencia = fromEnum 'A' - fromEnum 'a' 
+    in toEnum (diferencia + fromEnum x)
+    
