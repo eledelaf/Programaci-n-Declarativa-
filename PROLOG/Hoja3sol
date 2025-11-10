@@ -1,0 +1,188 @@
+progenitor(javier,pedro).
+progenitor(javier,teresa).
+progenitor(maria,pedro).
+progenitor(maria,teresa).
+progenitor(pedro,alfonso).
+progenitor(pedro,juan).
+progenitor(carmen,alfonso).
+progenitor(carmen,juan).
+progenitor(teresa,alicia).
+progenitor(jorge,alicia).
+
+hombre(javier).
+hombre(pedro).
+hombre(alfonso).
+hombre(juan).
+hombre(jorge).
+mujer(maria).
+mujer(carmen).
+mujer(teresa).
+mujer(alicia).
+
+arista(a,b).
+arista(a,c).
+arista(c,d).
+arista(d,e).
+
+arista(a,b,3).
+arista(a,c,5).
+arista(c,d,8).
+arista(d,e,1).
+
+
+/* EJERCICIO 1 */
+padre(X,Y):-progenitor(X,Y),hombre(X).
+madre(X,Y):-progenitor(X,Y),mujer(X).
+hermanos(X,Y) :- progenitor(A,X),progenitor(A,Y),X \= Y.
+tio(X,Y):- progenitor(A,Y),hermanos(X,A).
+primos(X,Y):-tio(A,X),progenitor(A,Y).
+antepasado(X,Y):-progenitor(X,Y).
+antepasado(X,Y):-progenitor(A,Y),antepasado(X,A).
+descendiente(X,Y):-antepasado(Y,X).
+parientes(X,Y):-antepasado(X,Y).
+parientes(X,Y):-antepasado(Y,X).
+parientes(X,Y):-antepasado(A,X),antepasado(A,Y),X\=Y.
+
+/* EJERCICIO 2 */
+camino(X,Y):-arista(X,Y).
+camino(X,Y):-arista(X,Z),camino(Z,Y).
+
+/* EJERCICIO 3 */
+camino(X,Y,[]):-arista(X,Y).
+camino(X,Y,[Z|Zs]):-arista(X,Z),camino(Z,Y,Zs).
+
+/* EJERCICIO 5 */
+invertir(Xs,Ys):-invertirAux(Xs,[],Ys).
+invertirAux([],Xs,Xs).
+invertirAux([X|Xs],Ys,Zs):-invertirAux(Xs,[X|Ys],Zs).
+
+prefijo([],_).
+prefijo([X|Xs],[X|Ys]):-prefijo(Xs,Ys).
+
+sufijo(Xs,Ys):-invertir(Xs,XIs),invertir(Ys,YIs),prefijo(XIs,YIs).
+
+/* EJERCICIO 6 */
+pertenece(X,[X|_]).
+pertenece(X,[_|Xs]):-pertenece(X,Xs).
+
+eliminarTodas(_,[],[]).
+eliminarTodas(X,[Y|Ys],[Y|Zs]):-X\=Y,eliminarTodas(X,Ys,Zs).
+eliminarTodas(X,[X|Xs],Zs):-eliminarTodas(X,Xs,Zs).
+
+
+eliminarUno(_,[],[]).
+eliminarUno(X,[X|Xs],Xs).
+eliminarUno(X,[Y|Ys],[Y|Zs]):-X\=Y,eliminarUno(X,Ys,Zs).
+
+
+/* EJERCICIO 7 */
+sinDuplicados([],[]).
+sinDuplicados([X],[X]).
+sinDuplicados([X,X|Xs],Ys):-sinDuplicados([X|Xs],Ys).
+sinDuplicados([X,Y|Zs],[X|Ws]):-X\=Y,sinDuplicados([Y|Zs],Ws).
+
+/* EJERCICIO 8 */
+concatenar([],Xs,Xs).
+concatenar([X|Xs],Ys,[X|Zs]):-concatenar(Xs,Ys,Zs).
+
+concat([],[]).
+concat([Xs|Xss],Ys):-concat(Xss,Zs),concatenar(Xs,Zs,Ys).
+
+/* EJERCICIO 9 */
+preOrden(aVacio,[]).
+preOrden(nodo(X,I,D),[X|Y]):-preOrden(I,Y1),preOrden(D,Y2),append(Y1,Y2,Y).
+
+inOrden(aVacio,[]).
+inOrden(nodo(X,I,D),Y):-inOrden(I,Y1),inOrden(D,Y2),append(Y1,[X|Y2],Y).
+
+postOrden(aVacio,[]).
+postOrden(nodo(X,I,D),Y):-postOrden(I,Y1),postOrden(D,Y2),append(Y2,[X],Y3),append(Y1,Y3,Y).
+
+/* EJERCICIO 10 */
+take(cero,_,[]).
+take(s(_),[],[]).
+take(s(X),[Y|Ys],[Y|Zs]):-take(X,Ys,Zs).
+
+drop(cero,Xs,Xs).
+drop(s(_),[],[]).
+drop(s(X),[_|Ys],Zs):-drop(X,Ys,Zs).
+
+splitAt(cero,Xs,[],Xs).
+splitAt(s(_),[],[],[]).
+splitAt(s(X),[Y|Ys],[Y|Zs],Ws):-splitAt(X,Ys,Zs,Ws).
+
+/* EJERCICIO 11 */
+takeA(0,_,[]).
+takeA(_,[],[]).
+takeA(N,[X|Xs],[X|Ys]):-N>0,N1 is N-1,takeA(N1,Xs,Ys).
+
+dropA(0,Xs,Xs).
+dropA(_,[],[]).
+dropA(N,[_|Xs],Ys):-N>0,N1 is N-1,dropA(N1,Xs,Ys).
+
+splitAtA(0,Xs,[],Xs).
+splitAtA(_,[],[],[]).
+splitAtA(N,[X|Xs],[X|Ys],Ws):-N>0,N1 is N-1,splitAtA(N1,Xs,Ys,Ws).
+
+/* EJERCICIO 12 */
+mcd(X,Y,Z):-X>Y,mcdM(X,Y,Z).
+mcd(X,Y,Z):-X=<Y,mcdM(Y,X,Z).
+
+mcdM(X,0,X).
+mcdM(X,Y,Z):-Y>0,Aux is X mod Y, mcdM(Y,Aux,Z).
+
+/* EJERCICIO 13 */
+caminoC(X,Y,Z):-arista(X,Y,Z).
+caminoC(X,Y,Z):-arista(X,W,Z1),caminoC(W,Y,Z2),Z is Z1+Z2.
+
+/* EJERCICIO 14 */
+fact(0,1).
+fact(N,X):-N>0,N1 is N-1,fact(N1,X1),X is N*X1.
+
+sumatorio([],0).
+sumatorio([X|Xs],N):-sumatorio(Xs,N1),N is N1+X.
+
+maximo([X],X).
+maximo([X,Y|Zs],W):-maximo([Y|Zs],W1),max(X,W1,W).
+max(X,Y,X):-X>=Y.
+max(X,Y,Y):-X<Y.
+
+prodEscalar([],[],0).
+prodEscalar([X|Xs],[Y|Ys],Z):-prodEscalar(Xs,Ys,Z1),Z is Z1+X*Y.
+
+sumaMatrices([],[],[]).
+sumaMatrices([Xs|Xss],[Ys|Yss],[Zs|Zss]):-sumaVector(Xs,Ys,Zs),sumaMatrices(Xss,Yss,Zss).
+sumaVector([],[],[]).
+sumaVector([X|Xs],[Y|Ys],[Z|Zs]):-Z is X+Y,sumaVector(Xs,Ys,Zs).
+
+/* EJERCICIO 15 */
+qsort([],[]).
+qsort([X|Xs],Ws):-reparte(X,Xs,Ys,Zs),qsort(Ys,Ys1),qsort(Zs,Zs1),append(Ys1,[X|Zs1],Ws).
+
+reparte(_,[],[],[]).
+reparte(X,[Y|Ys],[Y|Men],May):-X>=Y,reparte(X,Ys,Men,May).
+reparte(X,[Y|Ys],Men,[Y|May]):-X<Y,reparte(X,Ys,Men,May).
+
+/* EJERCICIO 16 */
+esta(X,nodo(X,_,_)).
+esta(X,nodo(Y,I,_)):-X<Y,esta(X,I).
+esta(X,nodo(Y,_,D)):-X>Y,esta(X,D).
+
+anadir(X,aVacio,nodo(X,aVacio,aVacio)).
+anadir(X,nodo(Y,I,D),nodo(Y,INew,D)):-X<Y,anadir(X,I,INew).
+anadir(X,nodo(Y,I,D),nodo(Y,I,DNew)):-X>=Y,anadir(X,D,DNew).
+
+eliminar(_,aVacio,aVacio).
+eliminar(X,nodo(Y,I,D),nodo(Y,Inew,D)):-X<Y,eliminar(X,I,Inew).
+eliminar(X,nodo(Y,I,D),nodo(Y,I,Dnew)):-X>Y,eliminar(X,D,Dnew).
+eliminar(X,nodo(X,I,aVacio),I).
+eliminar(X,nodo(X,I,nodo(Y,I2,D2)),nodo(M,I,DNew)):-menor(nodo(Y,I2,D2),M),eliminar(M,nodo(Y,I2,D2),DNew).
+
+menor(nodo(X,aVacio,_),X).
+menor(nodo(_,nodo(Y,I,D),_),M):-menor(nodo(Y,I,D),M).
+
+listaAArbol([],aVacio).
+listaAArbol([X|Xs],A):-listaAArbol(Xs,A1),anadir(X,A1,A).
+arbolEjemplo(X):-listaAArbol([11,8,8,9,6,6,5,6,7],X).			
+
+
